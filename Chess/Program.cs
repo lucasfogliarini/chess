@@ -1,11 +1,11 @@
-﻿// Set up the board
-using Chess;
+﻿using Chess;
 
 Board board = new();
 
 board.Print();
 
-board.MovePiece(3, 1, 4, 3);
+board.MovePiece("e2-e4");
 
-Console.WriteLine();
+Console.Clear();
+
 board.Print();
