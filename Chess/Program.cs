@@ -4,7 +4,9 @@ Board board = new();
 
 board.Print();
 
-board.MovePiece("e2-e4");
+board.MovePiece("e2e4");
+board.MovePiece("c7c5");
+board.MovePiece("g1f3");
 
 Console.Clear();
 

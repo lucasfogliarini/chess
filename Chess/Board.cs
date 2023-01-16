@@ -7,7 +7,7 @@ namespace Chess
     class Board
     {
         // Two-dimensional array to hold the pieces
-        private Piece[,] pieces = new Piece[8, 8];
+        public Piece[,] Pieces { get; private set; } = new Piece[8, 8];
 
         // Constructor to set up the board
         public Board() : this("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1")
@@ -37,7 +37,7 @@ namespace Chess
                 }
                 else
                 {
-                    pieces[y, x] = Piece.Generate(position);
+                    Pieces[y, x] = Piece.Generate(position);
                     x++;
                 }
             }
@@ -63,13 +63,13 @@ namespace Chess
                 // Print the pieces
                 for (int x = 0; x < 8; x++)
                 {
-                    if (pieces[y, x] == null)
+                    if (Pieces[y, x] == null)
                     {
                         Console.Write(".");
                     }
                     else
                     {
-                        Console.Write(pieces[y, x].Symbol);
+                        Console.Write(Pieces[y, x].Symbol);
                     }
                     Console.Write(" ");
                 }
@@ -101,22 +101,22 @@ namespace Chess
             }
 
             // Make sure there is a piece at the start position
-            if (pieces[startY, startX] == null)
+            if (Pieces[startY, startX] == null)
             {
                 Console.WriteLine("There is no piece at the start position.");
                 return;
             }
 
             // Check if the move is valid for the piece
-            if (!pieces[startY, startX].IsValidMove(startX, startY, endX, endY))
+            if (!Pieces[startY, startX].IsValidMove(startX, startY, endX, endY))
             {
                 Console.WriteLine("Invalid move for that piece.");
                 return;
             }
 
             // Make the move
-            pieces[endY, endX] = pieces[startY, startX];
-            pieces[startY, startX] = null;
+            Pieces[endY, endX] = Pieces[startY, startX];
+            Pieces[startY, startX] = null;
         }
 
         // Method to make a move
@@ -128,30 +128,7 @@ namespace Chess
             int endX = move[2] - 'a';
             int endY = 8 - (move[3] - '0');
 
-            // Make sure the start and end positions are on the board
-            if (startX < 0 || startX > 7 || startY < 0 || startY > 7 || endX < 0 || endX > 7 || endY < 0 || endY > 7)
-            {
-                Console.WriteLine("Invalid move.");
-                return;
-            }
-
-            // Make sure there is a piece at the start position
-            if (pieces[startY, startX] == null)
-            {
-                Console.WriteLine("There is no piece at the start position.");
-                return;
-            }
-
-            // Check if the move is valid for the piece
-            if (!pieces[startY, startX].IsValidMove(startX, startY, endX, endY))
-            {
-                Console.WriteLine("Invalid move for that piece.");
-                return;
-            }
-
-            // Make the move
-            pieces[endY, endX] = pieces[startY, startX];
-            pieces[startY, startX] = null;
+            MovePiece(startX, startY, endX, endY);
         }
 
     }

@@ -19,17 +19,17 @@
         public override bool IsValidMove(int startX, int startY, int endX, int endY)
         {
             // Pawns can only move forward
-            if (IsWhite && endY < startY)
+            if (IsWhite && endY > startY)
             {
                 return false;
             }
-            if (!IsWhite && endY > startY)
+            if (!IsWhite && endY < startY)
             {
                 return false;
             }
 
             // Pawns can move one or two squares forward on their first move
-            if (IsWhite && startY == 1 && endY == 3 && startX == endX || IsWhite && startY == 6 && endY == 4 && startX == endX)
+            if (!IsWhite && startY == 1 && endY == 3 && startX == endX || IsWhite && startY == 6 && endY == 4 && startX == endX)
             {
                 return true;
             }
@@ -42,5 +42,12 @@
 
             return true;
         }
+
+        //public bool IsValidMove(Board board, string move)
+        //{
+        //    int endX = move[0] - 'a';
+        //    int endY = (move[1] - '0') - 1;
+        //    // board.Pieces
+        //}
     }
 }
