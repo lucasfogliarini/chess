@@ -34,12 +34,6 @@
                 return true;
             }
 
-            // Pawns can only move one square forward otherwise
-            if (endY - startY != 1 || startX != endX)
-            {
-                return false;
-            }
-
             return true;
         }
 
