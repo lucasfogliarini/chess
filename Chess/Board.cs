@@ -9,6 +9,9 @@ namespace Chess
         // Two-dimensional array to hold the pieces
         public Piece[,] Pieces { get; private set; } = new Piece[8, 8];
 
+        public bool WhiteTurn { get; private set; }
+        public string Turn { get { return WhiteTurn ? "Brancas" : "Pretas"; } }
+
         // Constructor to set up the board
         public Board() : this("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1")
         {
@@ -17,6 +20,9 @@ namespace Chess
         // Constructor to set up the board using FEN
         public Board(string FEN)
         {
+            var fenSplitted = FEN.Split(' ');
+            WhiteTurn = fenSplitted[1] == "w";
+
             int y = 0;
             int x = 0;
             foreach (char position in FEN)
@@ -46,6 +52,10 @@ namespace Chess
         // Method to print the board to the console
         public void Print()
         {
+            Console.Title = $"{Turn} jogam";
+            Console.BackgroundColor = WhiteTurn ? ConsoleColor.White : ConsoleColor.Black;
+            Console.ForegroundColor = WhiteTurn ? ConsoleColor.Black : ConsoleColor.White;
+
             // Print the column labels
             Console.Write("  ");
             for (int x = 0; x < 8; x++)
@@ -87,22 +97,30 @@ namespace Chess
                 Console.Write(" " + (char)('a' + x));
             }
             Console.WriteLine();
+            Console.WriteLine();
         }
 
 
         // Method to make a move
         public void MovePiece(int startX, int startY, int endX, int endY)
         {
+            var piece = Pieces[startY, startX];
             // Make sure the start and end positions are on the board
             if (startX < 0 || startX > 7 || startY < 0 || startY > 7 || endX < 0 || endX > 7 || endY < 0 || endY > 7)
             {
                 throw new Exception("Movimento inválido, essas posições estão fora do alcance do tabuleiro.");
             }
 
-            // Make sure there is a piece at the start position
-            if (Pieces[startY, startX] == null)
+            if (piece == null)
             {
                 throw new Exception("Movimento inválido, não existe peça na posição inicial informada.");
+            }
+
+            // Make sure there is a piece at the start position
+            if (piece.IsWhite && !WhiteTurn || !piece.IsWhite && WhiteTurn)
+            {
+                
+                throw new Exception($"Movimento inválido, é a vez das {Turn}.");
             }
 
             // Check if the move is valid for the piece
@@ -112,6 +130,7 @@ namespace Chess
             }
 
             // Make the move
+            WhiteTurn = !piece.IsWhite;
             Pieces[endY, endX] = Pieces[startY, startX];
             Pieces[startY, startX] = null;
 
