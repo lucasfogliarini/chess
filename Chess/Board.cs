@@ -96,27 +96,26 @@ namespace Chess
             // Make sure the start and end positions are on the board
             if (startX < 0 || startX > 7 || startY < 0 || startY > 7 || endX < 0 || endX > 7 || endY < 0 || endY > 7)
             {
-                Console.WriteLine("Invalid move.");
-                return;
+                throw new Exception("Movimento inválido, essas posições estão fora do alcance do tabuleiro.");
             }
 
             // Make sure there is a piece at the start position
             if (Pieces[startY, startX] == null)
             {
-                Console.WriteLine("There is no piece at the start position.");
-                return;
+                throw new Exception("Movimento inválido, não existe peça na posição inicial informada.");
             }
 
             // Check if the move is valid for the piece
             if (!Pieces[startY, startX].IsValidMove(startX, startY, endX, endY))
             {
-                Console.WriteLine("Invalid move for that piece.");
-                return;
+                throw new Exception("Movimento inválido para essa peça.");
             }
 
             // Make the move
             Pieces[endY, endX] = Pieces[startY, startX];
             Pieces[startY, startX] = null;
+
+            Print();
         }
 
         // Method to make a move
