@@ -15,6 +15,27 @@
             IsWhite = isWhite;
         }
 
+        public static Piece Generate(char symbol)
+        {
+            switch (char.ToLower(symbol))
+            {
+                case 'p':
+                    return new Pawn(char.IsUpper(symbol));
+                case 'r':
+                    return new Rook(char.IsUpper(symbol));
+                case 'n':
+                    return new Knight(char.IsUpper(symbol));
+                case 'b':
+                    return new Bishop(char.IsUpper(symbol));
+                case 'q':
+                    return new Queen(char.IsUpper(symbol));
+                case 'k':
+                    return new King(char.IsUpper(symbol));
+                default:
+                    throw new ArgumentException($"Não existe uma peça com esse símbolo {symbol}.");
+            }
+        }
+
         // Method to check if a move is valid
         public abstract bool IsValidMove(int startX, int startY, int endX, int endY);
     }

@@ -1,4 +1,5 @@
 ﻿using Chess.Pieces;
+using System.Linq.Expressions;
 
 namespace Chess
 {
@@ -9,30 +10,37 @@ namespace Chess
         private Piece[,] pieces = new Piece[8, 8];
 
         // Constructor to set up the board
-        public Board()
+        public Board() : this("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1")
         {
-            // Initialize the pieces
-            pieces[0, 0] = new Rook(true);
-            pieces[0, 1] = new Knight(true);
-            pieces[0, 2] = new Bishop(true);
-            pieces[0, 3] = new Queen(true);
-            pieces[0, 4] = new King(true);
-            pieces[0, 5] = new Bishop(true);
-            pieces[0, 6] = new Knight(true);
-            pieces[0, 7] = new Rook(true);
-            for (int i = 0; i < 8; i++)
+        }
+
+        // Constructor to set up the board using FEN
+        public Board(string FEN)
+        {
+            int y = 0;
+            int x = 0;
+            foreach (char position in FEN)
             {
-                pieces[1, i] = new Pawn(true);
-                pieces[6, i] = new Pawn(false);
+                if (position == ' ')
+                {
+                    break;
+                }
+                else if (char.IsNumber(position))
+                {
+                    int nextPosition = position - '0';
+                    x += nextPosition;
+                }
+                else if (position == '/')
+                {
+                    y++;
+                    x = 0;
+                }
+                else
+                {
+                    pieces[y, x] = Piece.Generate(position);
+                    x++;
+                }
             }
-            pieces[7, 0] = new Rook(false);
-            pieces[7, 1] = new Knight(false);
-            pieces[7, 2] = new Bishop(false);
-            pieces[7, 3] = new Queen(false);
-            pieces[7, 4] = new King(false);
-            pieces[7, 5] = new Bishop(false);
-            pieces[7, 6] = new Knight(false);
-            pieces[7, 7] = new Rook(false);
         }
 
         // Method to print the board to the console
