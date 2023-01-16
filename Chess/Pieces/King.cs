@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Chess.Pieces
+﻿namespace Chess.Pieces
 {
     // Class to represent a king
     class King : Piece
@@ -22,7 +16,7 @@ namespace Chess.Pieces
         }
 
         // Method to check if a move is valid
-        public override bool IsValidMove(int startX, int startY, int endX, int endY)
+        public override bool IsValidMove(Board board, int startX, int startY, int endX, int endY)
         {
             // Kings can only move one square in any direction
             if (Math.Abs(endX - startX) > 1 || Math.Abs(endY - startY) > 1)
@@ -30,7 +24,7 @@ namespace Chess.Pieces
                 return false;
             }
 
-            return true;
+            return base.IsValidMove(board, startX, startY, endX, endY);
         }
     }
 

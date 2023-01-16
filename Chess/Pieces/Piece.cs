@@ -37,6 +37,15 @@
         }
 
         // Method to check if a move is valid
-        public abstract bool IsValidMove(int startX, int startY, int endX, int endY);
+        public virtual bool IsValidMove(Board board, int startX, int startY, int endX, int endY)
+        {
+            var endPiece = board.Pieces[endY, endX];
+            return endPiece == null || CanCapture(endPiece);
+        }
+
+        protected bool CanCapture(Piece endPiece)
+        {
+            return endPiece != null && endPiece.IsWhite != IsWhite;
+        }
     }
 }

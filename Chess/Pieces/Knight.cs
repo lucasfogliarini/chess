@@ -16,13 +16,13 @@
         }
 
         // Method to check if a move is valid
-        public override bool IsValidMove(int startX, int startY, int endX, int endY)
+        public override bool IsValidMove(Board board, int startX, int startY, int endX, int endY)
         {
             // Knights can move in an L-shape
             if (Math.Abs(endX - startX) == 2 && Math.Abs(endY - startY) == 1 ||
                 Math.Abs(endX - startX) == 1 && Math.Abs(endY - startY) == 2)
             {
-                return true;
+                return base.IsValidMove(board, startX, startY, endX, endY);
             }
 
             return false;

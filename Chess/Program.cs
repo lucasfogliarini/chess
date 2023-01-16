@@ -1,8 +1,13 @@
 ﻿using Chess;
 
 Board board = new();
+//falta:
+//validar roque
+//validar saltos
+//usar notação algébrica simplificada: e4, nd6
 
 string move;
+
 while (true)
 {
     board.Print();

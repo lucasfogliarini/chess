@@ -100,37 +100,36 @@ namespace Chess
             Console.WriteLine();
         }
 
-
         // Method to make a move
         public void MovePiece(int startX, int startY, int endX, int endY)
         {
-            var piece = Pieces[startY, startX];
+            var startPiece = Pieces[startY, startX];
+
             // Make sure the start and end positions are on the board
             if (startX < 0 || startX > 7 || startY < 0 || startY > 7 || endX < 0 || endX > 7 || endY < 0 || endY > 7)
             {
                 throw new Exception("Movimento inválido, essas posições estão fora do alcance do tabuleiro.");
             }
 
-            if (piece == null)
+            if (startPiece == null)
             {
                 throw new Exception("Movimento inválido, não existe peça na posição inicial informada.");
             }
 
             // Make sure there is a piece at the start position
-            if (piece.IsWhite && !WhiteTurn || !piece.IsWhite && WhiteTurn)
+            if (startPiece.IsWhite && !WhiteTurn || !startPiece.IsWhite && WhiteTurn)
             {
-                
                 throw new Exception($"Movimento inválido, é a vez das {Turn}.");
             }
 
             // Check if the move is valid for the piece
-            if (!Pieces[startY, startX].IsValidMove(startX, startY, endX, endY))
+            if (!Pieces[startY, startX].IsValidMove(this, startX, startY, endX, endY))
             {
                 throw new Exception("Movimento inválido para essa peça.");
             }
 
             // Make the move
-            WhiteTurn = !piece.IsWhite;
+            WhiteTurn = !startPiece.IsWhite;
             Pieces[endY, endX] = Pieces[startY, startX];
             Pieces[startY, startX] = null;
 

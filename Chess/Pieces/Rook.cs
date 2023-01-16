@@ -16,7 +16,7 @@
         }
 
         // Method to check if a move is valid
-        public override bool IsValidMove(int startX, int startY, int endX, int endY)
+        public override bool IsValidMove(Board board, int startX, int startY, int endX, int endY)
         {
             // Rooks can only move horizontally or vertically
             if (endX != startX && endY != startY)
@@ -24,7 +24,7 @@
                 return false;
             }
 
-            return true;
+            return base.IsValidMove(board, startX, startY, endX, endY);
         }
     }
 

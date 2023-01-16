@@ -16,32 +16,34 @@
         }
 
         // Method to check if a move is valid
-        public override bool IsValidMove(int startX, int startY, int endX, int endY)
+        public override bool IsValidMove(Board board, int startX, int startY, int endX, int endY)
         {
-            // Pawns can only move forward
-            if (IsWhite && endY > startY)
+            if (CanCapture(board.Pieces[endY, endX]))
             {
-                return false;
+                // Pawns can capture diagonally
+                if ((!IsWhite && endY == startY + 1 && (endX == startX + 1 || endX == startX - 1)) ||
+                    (IsWhite && endY == startY - 1 && (endX == startX + 1 || endX == startX - 1)))
+                {
+                    return true;
+                }
             }
-            if (!IsWhite && endY < startY)
+            else 
             {
-                return false;
+                bool onlyInline = startX == endX;
+                bool onlyForward = IsWhite && endY < startY || !IsWhite && endY > startY;
+                if (onlyInline && onlyForward)
+                {
+                    int squares = Math.Abs(endY - startY);
+                    if (squares == 1)
+                        return true;
+                    else if (squares == 2)
+                    {
+                        return !IsWhite && startY == 1 || IsWhite && startY == 6;
+                    }
+                }
             }
 
-            // Pawns can move one or two squares forward on their first move
-            if (!IsWhite && startY == 1 && endY == 3 && startX == endX || IsWhite && startY == 6 && endY == 4 && startX == endX)
-            {
-                return true;
-            }
-
-            return true;
+            return false;
         }
-
-        //public bool IsValidMove(Board board, string move)
-        //{
-        //    int endX = move[0] - 'a';
-        //    int endY = (move[1] - '0') - 1;
-        //    // board.Pieces
-        //}
     }
 }
