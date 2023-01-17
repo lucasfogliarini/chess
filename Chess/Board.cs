@@ -1,4 +1,5 @@
 ﻿using Chess.Pieces;
+using System.Globalization;
 using System.Linq.Expressions;
 using System.Text.RegularExpressions;
 
@@ -27,25 +28,25 @@ namespace Chess
 
             int y = 0;
             int x = 0;
-            foreach (char position in FEN)
+            foreach (char symbol in FEN)
             {
-                if (position == ' ')
+                if (symbol == ' ')
                 {
                     break;
                 }
-                else if (char.IsNumber(position))
+                else if (char.IsNumber(symbol))
                 {
-                    int nextPosition = position - '0';
+                    int nextPosition = symbol - '0';
                     x += nextPosition;
                 }
-                else if (position == '/')
+                else if (symbol == '/')
                 {
                     y++;
                     x = 0;
                 }
                 else
                 {
-                    Pieces[y, x] = Piece.Generate(position);
+                    Pieces[y, x] = Piece.Generate(symbol);
                     x++;
                 }
             }
@@ -107,12 +108,15 @@ namespace Chess
         {
             var piece = Pieces[startY, startX];
 
-            ValidateMove(piece, startX, startY, endX, endY);
-
-            ValidateCastle(piece, startX);
+            bool moveCastle = ValidateAndMoveCastle(piece, startX, endX);
+            if (!moveCastle)
+            {
+                ValidateMove(piece, startX, startY, endX, endY);
+            }
 
             // Make the move
             WhiteTurn = !piece.IsWhite;
+            piece.InStartingPosition = false;
             Pieces[endY, endX] = piece;
             Pieces[startY, startX] = null;
 
@@ -145,29 +149,42 @@ namespace Chess
             }
         }
 
-        private void ValidateCastle(Piece piece, int startX)
+        private bool ValidateAndMoveCastle(Piece piece, int startX, int endX)
         {
+            bool moveCastle = false;
             if (piece.InStartingPosition)
             {
-                piece.InStartingPosition = false;
                 if (!string.IsNullOrEmpty(Castle))
                 {
                     if (piece is Rook)
                     {
-                        var possibleCastle = startX == 7 ? "k" : "q";
-                        if (piece.IsWhite)
-                            possibleCastle = possibleCastle.ToUpper();
-                        Castle = Castle.Replace(possibleCastle, "");
-                        ;
+                        var sideCastle = SideCastle(piece.IsWhite, startX == 7);
+                        Castle = Castle.Replace(sideCastle, "");
                     }
                     else if (piece is King)
                     {
+                        bool kingSide = endX == 6;
+                        if (kingSide || endX == 2)
+                        {
+                            var sideCastle = SideCastle(piece.IsWhite, kingSide);
+                            if (Castle.Contains(sideCastle))
+                            {
+                                CastleRook(piece.IsWhite, kingSide);
+                                moveCastle = true;
+                            }
+                            else
+                            {
+                                return moveCastle;
+                            }
+                        }
+
                         var possibleCastle = piece.IsWhite ? "[KQ]" : "[kq]";
                         Regex regex = new(possibleCastle);
                         Castle = regex.Replace(Castle, "");
                     }
                 }
             }
+            return moveCastle;
         }
 
         // Method to make a move
@@ -182,5 +199,24 @@ namespace Chess
             MovePiece(startX, startY, endX, endY);
         }
 
+        private string SideCastle(bool isWhite, bool kingSide)
+        {
+            var sideCastle = kingSide ? "k" : "q";
+            if (isWhite)
+                sideCastle = sideCastle.ToUpper();
+            return sideCastle;
+        }
+
+        private void CastleRook(bool isWhite, bool kingSide)
+        {
+            int startY = isWhite ? 7 : 0;
+            int startX = kingSide ? 7 : 0;
+
+            int endY = isWhite ? 7 : 0;
+            int endX = kingSide ? 5 : 3;
+
+            this.Pieces[endY, endX] = Pieces[startY, startX];
+            this.Pieces[startY, startX] = null;
+        }
     }
 }
