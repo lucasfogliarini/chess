@@ -1,5 +1,6 @@
 ﻿using Chess.Pieces;
 using System.Linq.Expressions;
+using System.Text.RegularExpressions;
 
 namespace Chess
 {
@@ -8,9 +9,9 @@ namespace Chess
     {
         // Two-dimensional array to hold the pieces
         public Piece[,] Pieces { get; private set; } = new Piece[8, 8];
-
         public bool WhiteTurn { get; private set; }
         public string Turn { get { return WhiteTurn ? "Brancas" : "Pretas"; } }
+        public string Castle { get; set; }
 
         // Constructor to set up the board
         public Board() : this("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1")
@@ -22,6 +23,7 @@ namespace Chess
         {
             var fenSplitted = FEN.Split(' ');
             WhiteTurn = fenSplitted[1] == "w";
+            Castle = fenSplitted[2];
 
             int y = 0;
             int x = 0;
@@ -103,37 +105,69 @@ namespace Chess
         // Method to make a move
         public void MovePiece(int startX, int startY, int endX, int endY)
         {
-            var startPiece = Pieces[startY, startX];
+            var piece = Pieces[startY, startX];
 
+            ValidateMove(piece, startX, startY, endX, endY);
+
+            ValidateCastle(piece, startX);
+
+            // Make the move
+            WhiteTurn = !piece.IsWhite;
+            Pieces[endY, endX] = piece;
+            Pieces[startY, startX] = null;
+
+            Print();
+        }
+
+        private void ValidateMove(Piece piece, int startX, int startY, int endX, int endY)
+        {
             // Make sure the start and end positions are on the board
             if (startX < 0 || startX > 7 || startY < 0 || startY > 7 || endX < 0 || endX > 7 || endY < 0 || endY > 7)
             {
                 throw new Exception("Movimento inválido, essas posições estão fora do alcance do tabuleiro.");
             }
 
-            if (startPiece == null)
+            if (piece == null)
             {
                 throw new Exception("Movimento inválido, não existe peça na posição inicial informada.");
             }
 
             // Make sure there is a piece at the start position
-            if (startPiece.IsWhite && !WhiteTurn || !startPiece.IsWhite && WhiteTurn)
+            if (piece.IsWhite && !WhiteTurn || !piece.IsWhite && WhiteTurn)
             {
                 throw new Exception($"Movimento inválido, é a vez das {Turn}.");
             }
 
             // Check if the move is valid for the piece
-            if (!Pieces[startY, startX].IsValidMove(this, startX, startY, endX, endY))
+            if (!piece.IsValidMove(this, startX, startY, endX, endY))
             {
                 throw new Exception("Movimento inválido para essa peça.");
             }
+        }
 
-            // Make the move
-            WhiteTurn = !startPiece.IsWhite;
-            Pieces[endY, endX] = Pieces[startY, startX];
-            Pieces[startY, startX] = null;
-
-            Print();
+        private void ValidateCastle(Piece piece, int startX)
+        {
+            if (piece.InStartingPosition)
+            {
+                piece.InStartingPosition = false;
+                if (!string.IsNullOrEmpty(Castle))
+                {
+                    if (piece is Rook)
+                    {
+                        var possibleCastle = startX == 7 ? "k" : "q";
+                        if (piece.IsWhite)
+                            possibleCastle = possibleCastle.ToUpper();
+                        Castle = Castle.Replace(possibleCastle, "");
+                        ;
+                    }
+                    else if (piece is King)
+                    {
+                        var possibleCastle = piece.IsWhite ? "[KQ]" : "[kq]";
+                        Regex regex = new(possibleCastle);
+                        Castle = regex.Replace(Castle, "");
+                    }
+                }
+            }
         }
 
         // Method to make a move

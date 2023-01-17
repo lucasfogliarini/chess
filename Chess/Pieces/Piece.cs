@@ -6,6 +6,8 @@
         // Property to store the color of the piece (true for white, false for black)
         public bool IsWhite { get; private set; }
 
+        public bool InStartingPosition { get; set; } = true;
+
         // Property to store the symbol for the piece
         public abstract char Symbol { get; }
 

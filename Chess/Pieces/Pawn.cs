@@ -37,9 +37,7 @@
                     if (squares == 1)
                         return true;
                     else if (squares == 2)
-                    {
-                        return !IsWhite && startY == 1 || IsWhite && startY == 6;
-                    }
+                        return InStartingPosition;
                 }
             }
 
