@@ -24,6 +24,19 @@
                 return false;
             }
 
+            int xIncrement = (endX - startX) / Math.Abs(endX - startX);
+            int yIncrement = (endY - startY) / Math.Abs(endY - startY);
+
+            // Check each piece on the path to the destination
+            for (int x = startX + xIncrement, y = startY + yIncrement;
+                 x != endX; x += xIncrement, y += yIncrement)
+            {
+                if (board.Pieces[y, x] != null)
+                {
+                    return false;
+                }
+            }
+
             return base.IsValidMove(board, startX, startY, endX, endY);
         }
     }
